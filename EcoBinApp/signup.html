@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sign Up - EcoBin</title>
+  <link rel="stylesheet" href="stylesignup.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>Create Account</h1>
+
+  <input type="email" id="signup-email" placeholder="Enter your email">
+  <input type="password" id="signup-password" placeholder="Enter your password">
+  <button id="signupBtn">Sign Up</button>
+  <p id="signupError"></p>
+
+  <p style="text-align:center; margin-top:15px; color:#ffdd00;">
+    Already have an account? 
+    <button id="goLogin" style="background:none; border:none; color:#ff4e4e; cursor:pointer; font-weight:bold;">
+      Login
+    </button>
+  </p>
+</div>
+
+<!-- Firebase scripts -->
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCX2O4EFo1U6QYAlybBHJC-UqMAEqCtyDs",
+    authDomain: "plastic-waste-management-b4db5.firebaseapp.com",
+    databaseURL: "https://plastic-waste-management-b4db5-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "plastic-waste-management-b4db5",
+    storageBucket: "plastic-waste-management-b4db5.firebasestorage.app",
+    messagingSenderId: "1048380462925",
+    appId: "1:1048380462925:web:824ff7306ab3382793c904"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  // SIGNUP
+  const signupBtn = document.getElementById('signupBtn');
+  const signupError = document.getElementById('signupError');
+
+  signupBtn.addEventListener('click', () => {
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
+
+    auth.createUserWithEmailAndPassword(email, password)
+      .then(() => {
+        alert("Account created successfully! Please login.");
+        window.location.href = "login.html"; // redirect to login after signup
+      })
+      .catch((error) => {
+        signupError.textContent = error.message;
+      });
+  });
+
+  // Redirect to login page
+  document.getElementById('goLogin').addEventListener('click', () => {
+    window.location.href = "login.html";
+  });
+</script>
+
+</body>
+</html>

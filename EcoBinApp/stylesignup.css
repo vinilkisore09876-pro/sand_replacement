@@ -1,0 +1,122 @@
+/* Body Styling */
+body {
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(135deg, #ff4eb8, #9b59b6); /* pink to purple gradient */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+/* Signup Container */
+.container {
+  background-color: #000; /* black card */
+  padding: 50px 40px;
+  border-radius: 20px;
+  width: 400px;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover effect on container */
+.container:hover {
+  transform: scale(1.05);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+}
+
+/* Headings */
+h1 {
+  color: #ff4eb8; /* bright pink */
+  font-size: 32px;
+  margin-bottom: 30px;
+  text-shadow: 2px 2px #9b59b6; /* subtle purple shadow */
+}
+
+/* Input Fields */
+input[type="email"], input[type="password"] {
+  width: 100%;
+  padding: 15px;
+  margin: 12px 0;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  box-sizing: border-box;
+  outline: none;
+  color: #000;
+}
+
+/* Input focus effect */
+input[type="email"]:focus, input[type="password"]:focus {
+  border: 2px solid #ff4eb8; /* pink border on focus */
+  box-shadow: 0 0 10px #ff4eb8;
+}
+
+/* Signup Button */
+button#signupBtn {
+  width: 100%;
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 10px;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #9b59b6; /* purple button */
+  color: #fff;
+  transition: 0.3s;
+}
+
+button#signupBtn:hover {
+  background-color: #ff4eb8; /* pink hover */
+  color: #000;
+  transform: scale(1.05);
+}
+
+/* Redirect to Login link */
+p.redirect {
+  margin-top: 20px;
+  color: #fff;
+  font-size: 15px;
+}
+
+p.redirect button {
+  background: none;
+  border: none;
+  color: #ff4eb8;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+p.redirect button:hover {
+  color: #9b59b6;
+  text-decoration: underline;
+}
+
+/* Error Message */
+p#signupError {
+  color: #ff4eb8;
+  font-weight: bold;
+  margin-top: 15px;
+  min-height: 20px;
+}
+
+/* Responsive */
+@media (max-width: 450px) {
+  .container {
+    width: 90%;
+    padding: 30px 20px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  button#signupBtn {
+    font-size: 16px;
+    padding: 12px;
+  }
+}

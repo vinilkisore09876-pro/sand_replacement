@@ -1,0 +1,135 @@
+/* Body & Background */
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f4f9f4; /* light greenish white */
+  color: #1b5e20; /* dark green text */
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Header */
+header {
+  width: 100%;
+  background-color: #1b5e20; /* dark green */
+  color: #ffffff;
+  text-align: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 32px;
+  padding: 20px 0;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* Main container */
+.container {
+  width: 90%;
+  max-width: 600px;
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  margin-top: 40px;
+  text-align: center;
+}
+
+/* Welcome message */
+#welcome {
+  font-size: 20px;
+  margin-bottom: 25px;
+  font-weight: 500;
+}
+
+/* Dashboard cards */
+.dashboard {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  gap: 20px;
+}
+
+.card {
+  flex: 1;
+  background-color: #e6f5ea; /* light green */
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.card h2 {
+  margin: 0 0 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+.card p {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  color: #1b5e20;
+}
+
+/* Input Fields */
+input[type="text"], input[type="number"] {
+  width: 80%;
+  padding: 12px 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #c1e1c1;
+  font-size: 16px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* Input focus */
+input[type="text"]:focus, input[type="number"]:focus {
+  border-color: #1b5e20;
+  box-shadow: 0 0 8px rgba(27, 94, 32, 0.3);
+}
+
+/* Buttons */
+button {
+  padding: 12px 25px;
+  margin: 10px 5px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  background-color: #1b5e20;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #2e7d32;
+  transform: translateY(-2px);
+}
+
+/* Links */
+a {
+  color: #1b5e20;
+  font-weight: 500;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media(max-width: 480px) {
+  .dashboard {
+    flex-direction: column;
+  }
+
+  input[type="text"], input[type="number"], button {
+    width: 100%;
+  }
+}

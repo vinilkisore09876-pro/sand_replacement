@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>💼 Jobs - EcoBin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Roboto', sans-serif; background-color: #f4f9f4; color: #1b5e20; margin: 0; padding: 0; }
+    header {
+      width: 100%; background-color: #1b5e20; color: white; text-align: center;
+      font-family: 'Montserrat', sans-serif; font-size: 28px; padding: 20px 0; font-weight: 700;
+    }
+    .container {
+      width: 90%; max-width: 750px; margin: 30px auto; background: #fff; padding: 30px;
+      border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    label { display: block; margin: 15px 0 6px; font-weight: 500; }
+    input, select, textarea { width: 100%; padding: 12px; border: 1px solid #c1e1c1; border-radius: 8px; font-size: 16px; }
+    .file-input { padding: 8px; background: #f9f9f9; border: 2px dashed #1b5e20; }
+    button {
+      width: 100%; padding: 14px; background-color: #1b5e20; color: white; border: none;
+      border-radius: 8px; font-size: 18px; font-weight: 600; cursor: pointer; margin-top: 25px;
+    }
+    button:disabled { background-color: #666; cursor: not-allowed; }
+    .progress { margin: 15px 0; padding: 10px; background: #e6f5ea; border-radius: 8px; display: none; }
+    .success { color: #2e7d32; font-weight: bold; text-align: center; }
+    .error { color: #c62828; font-weight: bold; text-align: center; }
+  </style>
+</head>
+<body>
+
+<header>💼 Jobs - EcoBin</header>
+
+<div class="container">
+  <h2>Apply for Driver / Collection Job</h2>
+
+  <form id="jobForm">
+    <!-- All previous fields remain the same (Full Name, Email, Phone, Age, Job Role, etc.) -->
+    <label>Full Name</label>
+    <input type="text" id="fullName" required>
+
+    <label>Email</label>
+    <input type="email" id="email" readonly>
+
+    <label>Phone Number</label>
+    <input type="tel" id="phone" required>
+
+    <label>Age</label>
+    <input type="number" id="age" min="21" required>
+
+    <label>Preferred Job Role</label>
+    <select id="jobRole" required>
+      <option value="">Select Role</option>
+      <option value="Driver">Collection Vehicle Driver</option>
+      <option value="Plastic Collector">Plastic Collector</option>
+      <option value="Sorting Staff">Sorting Staff</option>
+      <option value="Field Supervisor">Field Supervisor</option>
+    </select>
+
+    <label>Driver's Photo (Recent - max 5MB)</label>
+    <input type="file" id="driverPhoto" accept="image/*" class="file-input" required>
+
+    <label>Licence Number</label>
+    <input type="text" id="licenceNumber" placeholder="TN-12-XXXX-XXXX" required>
+
+    <label>Licence Photo</label>
+    <input type="file" id="licencePhoto" accept="image/*" class="file-input" required>
+
+    <label>Vehicle Registration Number</label>
+    <input type="text" id="vehicleRegNumber" placeholder="TN-12-AB-1234" required>
+
+    <label>Vehicle RC Book Photo</label>
+    <input type="file" id="rcBookPhoto" accept="image/*" class="file-input" required>
+
+    <label>Vehicle Photo</label>
+    <input type="file" id="vehiclePhoto" accept="image/*" class="file-input" required>
+
+    <label>Last Vehicle Service Date</label>
+    <input type="date" id="lastServiceDate" required>
+
+    <label>Experience (in years)</label>
+    <input type="number" id="experience" min="0" value="0" required>
+
+    <label>Address</label>
+    <textarea id="address" rows="3" required></textarea>
+
+    <label>Why do you want to join EcoBin?</label>
+    <textarea id="reason" rows="4" required></textarea>
+
+    <button type="submit" id="submitBtn">Submit Application</button>
+  </form>
+
+  <div id="progress" class="progress">Uploading documents... <span id="progressText">0%</span></div>
+  <div id="message"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+
+<script>
+const firebaseConfig = { /* your config */ };
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+const auth = firebase.auth();
+const storage = firebase.storage();
+
+let currentUser = null;
+
+auth.onAuthStateChanged(user => {
+  if (!user) window.location.href = "login.html";
+  else {
+    currentUser = user;
+    document.getElementById("email").value = user.email;
+  }
+});
+
+async function uploadFile(file, folder, type) {
+  if (!file) return null;
+  const fileName = `${type}_${Date.now()}_${file.name}`;
+  const storageRef = storage.ref(`jobApplications/${currentUser.uid}/${fileName}`);
+  
+  const uploadTask = storageRef.put(file);
+  
+  return new Promise((resolve, reject) => {
+    uploadTask.on('state_changed', 
+      snapshot => {
+        const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        document.getElementById("progressText").innerText = `${progress}%`;
+      },
+      error => reject(error),
+      async () => {
+        const url = await uploadTask.snapshot.ref.getDownloadURL();
+        resolve(url);
+      }
+    );
+  });
+};
+
+document.getElementById("jobForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const messageDiv = document.getElementById("message");
+  const progressDiv = document.getElementById("progress");
+  const submitBtn = document.getElementById("submitBtn");
+
+  submitBtn.disabled = true;
+  progressDiv.style.display = "block";
+  messageDiv.innerHTML = "";
+
+  try {
+    // Get all files
+    const driverPhotoFile = document.getElementById("driverPhoto").files[0];
+    const licencePhotoFile = document.getElementById("licencePhoto").files[0];
+    const rcBookFile = document.getElementById("rcBookPhoto").files[0];
+    const vehiclePhotoFile = document.getElementById("vehiclePhoto").files[0];
+
+    // Upload files one by one with progress
+    const driverURL = await uploadFile(driverPhotoFile, "driver", "driver");
+    const licenceURL = await uploadFile(licencePhotoFile, "licence", "licence");
+    const rcURL = await uploadFile(rcBookFile, "rcbook", "rc");
+    const vehicleURL = await uploadFile(vehiclePhotoFile, "vehicle", "vehicle");
+
+    // Save to Firestore
+    await db.collection("jobApplications").add({
+      uid: currentUser.uid,
+      fullName: document.getElementById("fullName").value.trim(),
+      email: document.getElementById("email").value,
+      phone: document.getElementById("phone").value.trim(),
+      age: parseInt(document.getElementById("age").value),
+      jobRole: document.getElementById("jobRole").value,
+      licenceNumber: document.getElementById("licenceNumber").value.trim(),
+      vehicleRegNumber: document.getElementById("vehicleRegNumber").value.trim(),
+      lastServiceDate: document.getElementById("lastServiceDate").value,
+      
+      driverPhotoURL: driverURL,
+      licencePhotoURL: licenceURL,
+      rcBookURL: rcURL,
+      vehiclePhotoURL: vehicleURL,
+
+      experience: parseInt(document.getElementById("experience").value),
+      address: document.getElementById("address").value.trim(),
+      reason: document.getElementById("reason").value.trim(),
+      status: "Pending",
+      appliedAt: new Date()
+    });
+
+    progressDiv.style.display = "none";
+    messageDiv.innerHTML = `<p class="success">✅ Application submitted successfully!<br>All documents uploaded.<br>We will contact you soon.</p>`;
+
+    document.getElementById("jobForm").reset();
+    document.getElementById("email").value = currentUser.email;
+
+  } catch (error) {
+    console.error(error);
+    progressDiv.style.display = "none";
+    messageDiv.innerHTML = `<p class="error">❌ Upload failed. Please try again.<br>${error.message}</p>`;
+  } finally {
+    submitBtn.disabled = false;
+  }
+});
+</script>
+
+</body>
+</html>

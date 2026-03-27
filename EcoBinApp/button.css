@@ -1,0 +1,21 @@
+/* Points Button */
+#pointsBtn {
+  padding: 12px 25px;
+  margin: 10px 5px;
+  border-radius: 15px;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(45deg, #ff00ff, #ff4eb8); /* pink to purple gradient */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+}
+
+/* Points Button hover animation */
+#pointsBtn:hover {
+  transform: translateY(-3px) scale(1.1);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  background: linear-gradient(45deg, #ff4eb8, #ff00ff); /* reversed gradient */
+}

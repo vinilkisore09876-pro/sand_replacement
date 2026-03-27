@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>View Data</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>📊 Plastic Data</h1>
+
+<div id="data"></div>
+
+<br>
+<a href="index.html">⬅ Back</a>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSy...",
+    authDomain: "plastic-waste-management-b4db5.firebaseapp.com",
+    projectId: "plastic-waste-management-b4db5",
+  };
+
+  firebase.initializeApp(firebaseConfig);
+
+  const db = firebase.firestore();
+
+  // 🔐 Check login first
+  firebase.auth().onAuthStateChanged((user) => {
+    if (!user) {
+      window.location.href = "login.html";
+    } else {
+      loadData(user);
+    }
+  });
+
+  function loadData(user) {
+    const dataDiv = document.getElementById("data");
+
+    db.collection("plasticData")
+      .where("email", "==", user.email)   // 👈 important line
+      .get()
+      .then((snapshot) => {
+        snapshot.forEach((doc) => {
+          const item = doc.data();
+          dataDiv.innerHTML += `
+            <p><b>${item.name}</b> - ${item.amount} kg</p>
+          `;
+        });
+      });
+  }
+</script>
+
+</body>
+</html>
