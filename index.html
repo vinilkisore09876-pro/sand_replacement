@@ -1,9 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title> ECOBIN </title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECOBIN</title>
+  
+  <!-- Favicon (Fixed) -->
+  <link rel="icon" type="image/x-icon" href="company.png">
+  
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@500&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/x-icon" href="company.png" alt="Company Logo" class="logo">
+  
   <style>
     body {
       font-family: 'Roboto', sans-serif;
@@ -20,10 +26,9 @@
       text-align: center;
       font-family: 'Montserrat', sans-serif;
       font-size: 32px;
-      padding: 20px 0;
+      padding: 15px 0;
       font-weight: 700;
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      position: relative;
     }
 
     .container {
@@ -37,7 +42,8 @@
       text-align: center;
     }
 
-    input[type="text"], input[type="number"] {
+    input[type="text"], 
+    input[type="number"] {
       width: 80%;
       padding: 12px 15px;
       margin: 10px 0;
@@ -48,7 +54,8 @@
       box-sizing: border-box;
     }
 
-    input[type="text"]:focus, input[type="number"]:focus {
+    input[type="text"]:focus, 
+    input[type="number"]:focus {
       border-color: #1b5e20;
       box-shadow: 0 0 8px rgba(27,94,32,0.3);
     }
@@ -100,6 +107,7 @@
     .side-panel ul {
       list-style: none;
       padding: 0;
+      margin: 0;
     }
 
     .side-panel li {
@@ -133,13 +141,12 @@
 </head>
 <body>
 
-
-<header style="padding: 15px 0;">
+<header>
   <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
     <img src="logo.jpg" 
          alt="EcoBin Logo" 
          style="height: 60px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
-    <h1 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 32px; font-weight: 700;">
+    <h1 style="margin: 0; font-size: 32px; font-weight: 700;">
       EcoBin
     </h1>
   </div>
@@ -173,11 +180,13 @@
 <!-- Overlay -->
 <div class="overlay" id="overlay" onclick="closeDashboard()"></div>
 
+<!-- Firebase Scripts -->
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
 
 <script>
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyCX2O4EFo1U6QYAlybBHJC-UqMAEqCtyDs",
   authDomain: "plastic-waste-management-b4db5.firebaseapp.com",
@@ -194,19 +203,7 @@ const db = firebase.firestore();
 const auth = firebase.auth();
 const pointsPerKg = 100;
 let currentUser = null;
-// Add Transaction to History
-async function addTransaction(type, details, kg = 0, pointsChange = 0) {
-  if (!currentUser) return;
-  
-  await db.collection("transactions").add({
-    uid: currentUser.uid,
-    type: type,
-    details: details,
-    kg: kg,
-    pointsChange: pointsChange,
-    time: new Date()
-  });
-}
+
 // Auth State Listener
 auth.onAuthStateChanged(user => {
   if (!user) {
@@ -217,23 +214,25 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-// Add Transaction to History
+// Add Transaction Function
 async function addTransaction(type, details, kg = 0, pointsChange = 0) {
   if (!currentUser) return;
   
-  await db.collection("transactions").add({
-    uid: currentUser.uid,
-    type: type,
-    details: details,
-    kg: kg,
-    pointsChange: pointsChange,
-    time: new Date()
-  });
+  try {
+    await db.collection("transactions").add({
+      uid: currentUser.uid,
+      type: type,
+      details: details,
+      kg: kg,
+      pointsChange: pointsChange,
+      time: new Date()
+    });
+  } catch (error) {
+    console.error("Transaction Error:", error);
+  }
 }
 
-// Submit Plastic (Clean & Updated)
-// Submit Plastic - FIXED VERSION
-// FIXED submitPlastic() - Replace your old function
+// Submit Plastic Function
 async function submitPlastic() {
   const name = document.getElementById("name").value.trim();
   const amountStr = document.getElementById("amount").value.trim();
@@ -250,11 +249,10 @@ async function submitPlastic() {
     return;
   }
 
-  // Calculate points FIRST
   const pointsEarned = Math.round(amount * pointsPerKg);
 
   try {
-    // 1. Save plastic data
+    // Save plastic data
     await db.collection("plasticData").add({
       uid: currentUser.uid,
       name: name,
@@ -263,7 +261,7 @@ async function submitPlastic() {
       time: new Date()
     });
 
-    // 2. Update points in users collection
+    // Update user points
     const userRef = db.collection("users").doc(currentUser.uid);
     await userRef.set({
       points: firebase.firestore.FieldValue.increment(pointsEarned),
@@ -271,7 +269,7 @@ async function submitPlastic() {
       lastUpdated: new Date()
     }, { merge: true });
 
-    // 3. Add to transaction history
+    // Add to transaction history
     await addTransaction("plastic", name, amount, pointsEarned);
 
     alert(`✅ Plastic submitted successfully!\nYou earned +${pointsEarned} points.`);
@@ -282,9 +280,10 @@ async function submitPlastic() {
 
   } catch (error) {
     console.error("Submit Plastic Error:", error);
-    alert("❌ Failed to submit plastic. Please check console.");
+    alert("❌ Failed to submit plastic. Please try again.");
   }
 }
+
 // Side Panel Functions
 function openDashboard() {
   document.getElementById("sidePanel").style.width = "250px";
@@ -297,13 +296,17 @@ function closeDashboard() {
 }
 
 function goToPage(url) {
-  window.location.href = url;
+  if (!url) return;
+  window.location.href = url;   // Simplified - no need for "./"
 }
 
 function logout() {
   auth.signOut().then(() => {
     window.location.href = "login.html";
-  }).catch(err => console.error(err));
+  }).catch(err => {
+    console.error(err);
+    alert("Logout failed");
+  });
 }
 </script>
 
